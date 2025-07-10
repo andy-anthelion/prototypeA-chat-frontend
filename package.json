@@ -1,0 +1,12 @@
+{
+  "name": "prototypeA-chat-frontend",
+  "version": "0.0.1",
+  "description": "PrototypeA Chat Frontend Proxy Server",
+  "scripts": {
+    "start": "bun run proxy-server.ts",
+    "build": "echo 'Flutter pre-built - no build step needed'",
+    "dev": "bun run proxy-server.ts",
+    "flutter:build": "cd chat_web && flutter build web"
+  },
+  "keywords": ["chat", "frontend", "proxy", "bun"]
+} 

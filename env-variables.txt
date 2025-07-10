@@ -1,0 +1,48 @@
+# Environment Variables for WingDing Chat Frontend Server
+# =======================================================
+
+Required Environment Variables:
+
+1. API_URL
+   - Description: URL of the chat API server
+   - Local development: http://localhost:10000
+   - Production: https://your-api-service.onrender.com
+   - Used in: proxy-server.ts line 3
+
+2. PORT
+   - Description: Server port (automatically set by Render)
+   - Local development: 8080
+   - Production: Set automatically by Render
+   - Used in: proxy-server.ts line 118
+
+3. NODE_ENV
+   - Description: Environment type
+   - Development: development
+   - Production: production
+   - Optional but recommended
+
+Environment Variables for Render Deployment:
+============================================
+
+Frontend Service (.env or Render Dashboard):
+- API_URL=https://your-api-service.onrender.com
+- NODE_ENV=production
+- PORT=<automatically-set-by-render>
+
+API Service (.env or Render Dashboard):
+- FRONTEND_URL=https://your-frontend-service.onrender.com
+- NODE_ENV=production
+- PORT=<automatically-set-by-render>
+
+Local Development .env files:
+============================
+
+chat-frontend/.env:
+API_URL=http://localhost:10000
+PORT=8080
+NODE_ENV=development
+
+chat-api/.env:
+FRONTEND_URL=http://localhost:8080
+PORT=10000
+NODE_ENV=development 

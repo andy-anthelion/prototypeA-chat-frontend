@@ -1,0 +1,4 @@
+node_modules/
+*.log
+.env
+# Note: chat_web/build/ is NOT excluded - we want to commit Flutter build files for Render 
