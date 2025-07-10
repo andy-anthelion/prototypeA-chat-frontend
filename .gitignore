@@ -1,4 +1,27 @@
 node_modules/
 *.log
 .env
-# Note: chat_web/build/ is NOT excluded - we want to commit Flutter build files for Render 
+
+# IMPORTANT: Allow Flutter build files for Render deployment
+# Override Flutter's default .gitignore that excludes /build/
+!chat_web/build/
+!chat_web/build/**
+!**/build/web/
+!**/build/web/**
+
+# Allow common build file extensions
+!*.js
+!*.css
+!*.html
+!*.wasm
+!*.map
+!*.json
+!*.png
+!*.jpg
+!*.svg
+!*.ico
+!*.woff
+!*.woff2
+!*.ttf
+
+# Note: chat_web/build/ files will be committed for Render deployment 
