@@ -88,14 +88,42 @@ async function proxyToAPI(req: Request, pathname: string): Promise<Response> {
     console.log(`🔄 Method: ${req.method}, Headers:`, Object.fromEntries(req.headers.entries()));
     
     // Forward the request to the API server
+    // Filter out problematic headers
+    const forwardHeaders = new Headers();
+    for (const [key, value] of req.headers.entries()) {
+      // Skip headers that could cause routing issues
+      if (!['host', 'connection', 'upgrade', 'keep-alive'].includes(key.toLowerCase())) {
+        forwardHeaders.set(key, value);
+      }
+    }
+    
+    console.log(`🔄 Forward Headers:`, Object.fromEntries(forwardHeaders.entries()));
+    
     const response = await fetch(apiUrl, {
       method: req.method,
-      headers: req.headers,
+      headers: forwardHeaders,
       body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req.body,
     });
     
     console.log(`✅ API Response: ${response.status} ${response.statusText}`);
     console.log(`✅ Response Headers:`, Object.fromEntries(response.headers.entries()));
+    
+    // Check if response is actually from the API server
+    if (response.headers.get('content-type')?.includes('text/html')) {
+      console.log(`⚠️  WARNING: Got HTML response instead of JSON - possible routing issue!`);
+      const body = await response.text();
+      console.log(`⚠️  Response body preview:`, body.substring(0, 200));
+      return new Response(JSON.stringify({ 
+        error: 'Unexpected HTML response from API server',
+        details: 'This suggests a routing issue'
+      }), {
+        status: 502,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+    }
     
     // Forward the response back to client
     return new Response(response.body, {
