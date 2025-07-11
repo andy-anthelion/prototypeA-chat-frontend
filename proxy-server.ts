@@ -126,10 +126,17 @@ async function proxyToAPI(req: Request, pathname: string): Promise<Response> {
     }
     
     // Forward the response back to client
+    // Remove compression headers to prevent browser decoding issues
+    const responseHeaders = new Headers(response.headers);
+    responseHeaders.delete('content-encoding');
+    responseHeaders.delete('content-length'); // Length may be wrong after removing compression
+    
+    console.log(`📤 Final Response Headers:`, Object.fromEntries(responseHeaders.entries()));
+    
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers,
+      headers: responseHeaders,
     });
     
   } catch (error) {
