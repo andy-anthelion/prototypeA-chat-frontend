@@ -84,6 +84,8 @@ async function proxyToAPI(req: Request, pathname: string): Promise<Response> {
     const apiUrl = `${API_SERVER_URL}${apiPath}${url.search}`;
     
     console.log(`🔄 API Proxy: ${pathname} → ${apiUrl}`);
+    console.log(`🔄 API_SERVER_URL: ${API_SERVER_URL}`);
+    console.log(`🔄 Method: ${req.method}, Headers:`, Object.fromEntries(req.headers.entries()));
     
     // Forward the request to the API server
     const response = await fetch(apiUrl, {
@@ -91,6 +93,9 @@ async function proxyToAPI(req: Request, pathname: string): Promise<Response> {
       headers: req.headers,
       body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req.body,
     });
+    
+    console.log(`✅ API Response: ${response.status} ${response.statusText}`);
+    console.log(`✅ Response Headers:`, Object.fromEntries(response.headers.entries()));
     
     // Forward the response back to client
     return new Response(response.body, {
@@ -101,9 +106,11 @@ async function proxyToAPI(req: Request, pathname: string): Promise<Response> {
     
   } catch (error) {
     console.error('❌ API proxy error:', error);
+    console.error('❌ Error details:', error.message, error.stack);
     return new Response(JSON.stringify({ 
       error: 'API server unavailable',
-      details: 'Failed to connect to chat API server'
+      details: 'Failed to connect to chat API server',
+      errorMessage: error.message
     }), {
       status: 503,
       headers: {
@@ -145,6 +152,18 @@ const server = serve({
         status: 'healthy',
         proxy: 'running',
         timestamp: Date.now()
+      }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Debug endpoint to check API_URL
+    if (pathname === '/debug') {
+      return new Response(JSON.stringify({ 
+        API_SERVER_URL: API_SERVER_URL,
+        env_API_URL: process.env.API_URL,
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
