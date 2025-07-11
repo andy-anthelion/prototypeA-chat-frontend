@@ -128,6 +128,10 @@ const server = serve({
     const url = new URL(req.url);
     const pathname = url.pathname;
     
+    console.log(`🌐 INCOMING REQUEST: ${req.method} ${pathname}${url.search}`);
+    console.log(`🌐 Full URL: ${req.url}`);
+    console.log(`🌐 User-Agent: ${req.headers.get('user-agent') || 'none'}`);
+    
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
       return new Response(null, {
@@ -143,6 +147,7 @@ const server = serve({
     
     // Proxy API calls to chat server
     if (pathname.startsWith('/api/')) {
+      console.log(`🔀 ROUTE: API proxy matched for ${pathname}`);
       return proxyToAPI(req, pathname);
     }
     
@@ -170,6 +175,7 @@ const server = serve({
     }
     
     // Serve static files (Flutter web app)
+    console.log(`🔀 ROUTE: Static file serving for ${pathname}`);
     return serveStaticFile(pathname);
   },
 });
